@@ -1,0 +1,118 @@
+# sleigh include file for MCPX Code language instructions
+
+define token instr (40)
+	op8 = (0,7)
+	
+	cop8 = (8,12)
+	
+	u32a = (8,39)
+;
+
+define token instrb (32)
+	u32b = (0, 31)
+;
+
+define pcodeop exit;
+
+REL: reloc is u32b [ reloc = inst_next + u32b; ] {
+	export *:4 reloc;
+}
+
+CREL: reloc is epsilon [ reloc = inst_next + ACC; ] {
+	export *:4 reloc;
+}
+
+################################################################
+
+:xc_mem_read u32a is op8=0x02 & u32a ; u32b {
+	ACC = *:4 u32a:4;
+}
+
+:xc_mem_write u32a, u32b is op8=0x03 & u32a ; u32b {
+	*:4 u32a:4 = u32b:4;
+}
+
+:xc_pci_write u32a, u32b is op8=0x04 & u32a ; u32b {
+	*[pciconf]:4 u32a:4 = u32b:4;
+}
+
+:xc_pci_read u32a is op8=0x05 & u32a ; u32b {
+	ACC = *[pciconf]:4 u32a:4;
+}
+
+:xc_andor u32a, u32b is op8=0x06 & u32a ; u32b {
+	ACC = ACC & u32a:4;
+	ACC = ACC | u32b:4;
+}
+
+:xc_jne u32a, REL is op8=0x08 & u32a ; REL {
+	if ACC == u32a:4 goto REL;
+}
+
+:xc_jmp REL is op8=0x09 ; REL {
+	goto REL;
+}
+
+:xc_andorepb u32a, u32b is op8=0x10 & u32a ; u32b {
+	ACC2 = ACC2 & u32a:4;
+	ACC2 = ACC2 | u32b:4;
+}
+
+:xc_io_write u32a, u32b is op8=0x11 & u32a ; u32b {
+	*[io]:2 u32a:2 = u32b:4;
+}
+
+:xc_io_read u32a is op8=0x12 & u32a ; u32b {
+	ACC = *[io]:2 u32a:2;
+} 
+
+:xc_exit is op8=0xEE {
+	exit();
+	goto inst_start;
+}
+
+:xc_chain ^"xc_mem_read", u32b is op8=0x07 & cop8=0x02 ; u32b {
+	ACC = *:4 u32b:4;
+}
+
+:xc_chain ^"xc_mem_write", u32b is op8=0x7 & cop8=0x03 ; u32b {
+	*:4 u32b:4 = ACC:4;
+}
+
+:xc_chain ^"xc_pci_write", u32b is op8=0x7 & cop8=0x04 ; u32b {
+	*[pciconf]:4 u32b:4 = ACC:4;
+}
+
+:xc_chain ^"xc_pci_read", u32b is op8=0x7 & cop8=0x05 ; u32b {
+	ACC = *[pciconf]:4 u32b:4;
+}
+
+:xc_chain ^"xc_andor", u32b is op8=0x7 & cop8=0x06 ; u32b {
+	ACC = ACC & u32b:4;
+	ACC = ACC | ACC;
+}
+
+:xc_chain ^"xc_jne", u32b, CREL is op8=0x7 & cop8=0x08 ; u32b & CREL {
+	if ACC == u32b:4 goto CREL;
+}
+
+:xc_chain ^"xc_jmp", CREL is op8=0x7 & cop8=0x09 ; u32b & CREL {
+	goto CREL;
+}
+
+:xc_chain ^"xc_andorepb", u32b is op8=0x7 & cop8=0x10 ; u32b {
+	ACC2 = ACC2 & u32b:4;
+	ACC2 = ACC2 | ACC;
+}
+
+:xc_chain ^"xc_io_write", u32b is op8=0x7 & cop8=0x11 ; u32b {
+	*[io]:2 u32b:2 = ACC:2;
+}
+
+:xc_chain ^"xc_io_read", u32b is op8=0x7 & cop8=0x12 ; u32b {
+	ACC = *[io]:2 u32b:2;
+}
+
+:xc_chain ^"xc_unk_"^cop8, u32b is op8=0x7 & cop8; u32b {}
+
+:xc_unk_^op8 u32a, u32b is op8 & u32a ; u32b {}

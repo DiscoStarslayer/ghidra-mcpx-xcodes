@@ -1,0 +1,17 @@
+# sleigh specification file for Skeleton Processor
+#   >> see docs/languages/sleigh.htm or sleigh.pdf for Sleigh syntax
+# Other language modules (see Ghidra/Processors) may provide better examples
+# when creating a new language module.
+
+define endian=little;
+define alignment=1;
+
+define space ram     type=ram_space      size=4  default;
+define space io      type=ram_space      size=2;
+define space pciconf type=ram_space		 size=4;
+
+define space register type=register_space size=1;
+
+define register offset=0x00 size=4 [ PC ACC ACC2 SP ];
+
+@include "mcpxcode.sinc"
