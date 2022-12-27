@@ -17,7 +17,9 @@ and automatically setup the memory space for the firmware.
 
 ## References
 xdecode: https://github.com/Ernegien/xdecode
+
 xbox dev wiki: https://xboxdevwiki.net/The_Hidden_Boot_Code_of_the_Xbox#The_Xcodes
+
 mborgerson's blog: https://mborgerson.com/deconstructing-the-xbox-boot-rom/
 
 ## Todo
