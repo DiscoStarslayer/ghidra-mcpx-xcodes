@@ -14,3 +14,13 @@ directly into Ghidra by selecting `File -> Install Extensions` from the main Ghi
 
 The installation includes support for the XCode instruction set, as well as a file loader that will detect original xbox firmware files
 and automatically setup the memory space for the firmware.
+
+## References
+xdecode: https://github.com/Ernegien/xdecode
+
+xbox dev wiki: https://xboxdevwiki.net/The_Hidden_Boot_Code_of_the_Xbox#The_Xcodes
+
+mborgerson's blog: https://mborgerson.com/deconstructing-the-xbox-boot-rom/
+
+## Todo
+- Use knowledge in xemu and xbox dev wiki to document memory, IO and PCI conf address space to provide context on actions.
