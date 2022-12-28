@@ -3,7 +3,7 @@
 define token instr (40)
 	op8 = (0,7)
 	
-	cop8 = (8,12)
+	cop8 = (8,15)
 	
 	u32a = (8,39)
 ;

@@ -1,0 +1,140 @@
+# sleigh include file for MCPX Code language instructions
+
+define token instr (40)
+	op8 = (0,7)
+	
+	cop8 = (8,15)
+	
+	u32a = (8,39)
+;
+
+define token instrb (32)
+	u32b = (0, 31)
+;
+
+define pcodeop unk_op;
+define pcodeop exit;
+
+REL: reloc is u32b [ reloc = inst_next + u32b; ] {
+	export *:4 reloc;
+}
+
+CREL: reloc is epsilon [ reloc = inst_next + ACC; ] {
+	export *:4 reloc;
+}
+
+# PCI Config add to memory addr
+# 0x80000000 | bus << 16 | device << 11 | function <<  8 | offset
+#
+# mask = 0x80000880 ^ 0x80000000
+#
+# bus = (mask > 16) & 0xFF
+# device = (mask > 11) & 0x1F
+# func = (mask > 8) & 0x7
+# reg = mask & 0xFF
+#
+# target = bus << 24 | device << 16 | function << 8 | reg
+
+PCI: conf is u32a [ 
+	conf = (((u32a >> 16) & 0xFF) << 24) | (((u32a >> 11) & 0x1F) << 16) | (((u32a >> 8) & 0x7) << 8) | (u32a & 0xFF);	
+] {
+	export *[pciconf]:4 conf;
+}
+################################################################
+
+:xc_mem_read u32a is op8=0x9A & u32a ; u32b {
+	ACC = *[ram]:4 u32a:4;
+}
+
+:xc_mem_write u32a, u32b is op8=0x5B & u32a ; u32b {
+	*[ram]:4 u32a:4 = u32b:4;
+}
+
+:xc_pci_write PCI, u32b is op8=0xF9 & PCI ; u32b {
+	PCI = u32b:4;
+}
+
+:xc_pci_read PCI is op8=0xF5 & PCI ; u32b {
+	ACC = PCI;
+}
+
+:xc_andor u32a, u32b is op8=0xED & u32a ; u32b {
+	ACC = ACC & u32a:4;
+	ACC = ACC | u32b:4;
+}
+
+:xc_jne u32a, REL is op8=0x04 & u32a ; REL {
+	if ACC == u32a:4 goto REL;
+}
+
+:xc_jmp REL is op8=0x25 ; REL {
+	goto REL;
+}
+
+:xc_andorepb u32a, u32b is op8=0x6C & u32a ; u32b {
+	ACC2 = ACC2 & u32a:4;
+	ACC2 = ACC2 | u32b:4;
+}
+
+:xc_io_write u32a, u32b is op8=0x3C & u32a ; u32b {
+	*[io]:1 u32a:2 = u32b:1;
+}
+
+:xc_io_read u32a is op8=0xC8 & u32a ; u32b {
+	ACC = zext(*[io]:1 u32a:2);
+} 
+
+:xc_exit is op8=0xBF {
+	exit();
+	goto inst_start;
+}
+
+:xc_chain ^"xc_mem_read", u32b is op8=0x68 & cop8=0x9A ; u32b {
+	ACC = *:4 u32b:4;
+}
+
+:xc_chain ^"xc_mem_write", u32b is op8=0x68 & cop8=0x5B ; u32b {
+	*:4 u32b:4 = ACC:4;
+}
+
+:xc_chain ^"xc_pci_write", u32b is op8=0x68 & cop8=0xF9 ; u32b {
+	*[pciconf]:4 u32b:4 = ACC:4;
+}
+
+:xc_chain ^"xc_pci_read", u32b is op8=0x68 & cop8=0xF5 ; u32b {
+	ACC = *[pciconf]:4 u32b:4;
+}
+
+:xc_chain ^"xc_andor", u32b is op8=0x68 & cop8=0xED ; u32b {
+	ACC = ACC & u32b:4;
+	ACC = ACC | ACC;
+}
+
+:xc_chain ^"xc_jne", u32b, CREL is op8=0x68 & cop8=0x04 ; u32b & CREL {
+	if ACC == u32b:4 goto CREL;
+}
+
+:xc_chain ^"xc_jmp", CREL is op8=0x68 & cop8=0x25 ; u32b & CREL {
+	goto CREL;
+}
+
+:xc_chain ^"xc_andorepb", u32b is op8=0x68 & cop8=0x6C ; u32b {
+	ACC2 = ACC2 & u32b:4;
+	ACC2 = ACC2 | ACC;
+}
+
+:xc_chain ^"xc_io_write", u32b is op8=0x68 & cop8=0x3C ; u32b {
+	*[io]:1 u32b:2 = ACC:1;
+}
+
+:xc_chain ^"xc_io_read", u32b is op8=0x68 & cop8=0xC8 ; u32b {
+	ACC = zext(*[io]:1 u32b:2);
+}
+
+:xc_chain ^"xc_unk_"^cop8, u32b is op8=0x68 & cop8; u32b {
+	unk_op(cop8:1, u32b:4, ACC:4);
+}
+
+:xc_unk_^op8 u32a, u32b is op8 & u32a ; u32b {
+	unk_op(op8:1, u32a:4, u32b:4);
+}

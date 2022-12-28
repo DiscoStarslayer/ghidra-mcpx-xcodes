@@ -7,12 +7,12 @@
    <language processor="mcpxcode"
             endian="little"
             size="32"
-            variant="default"
+            variant="DBUG"
             version="1.0"
-            slafile="mcpxcode.sla"
-            processorspec="mcpxcode.pspec"
-            id="mcpxcode:LE:32:default">
+            slafile="xcodedbug.sla"
+            processorspec="xcodedbug.pspec"
+            id="mcpxcode:LE:32:DBUG">
     <description>Skeleton Language Module</description>
-    <compiler name="default" spec="mcpxcode.cspec" id="default"/>
+    <compiler name="default" spec="xcodedbug.cspec" id="default"/>
   </language> 
 </language_definitions>

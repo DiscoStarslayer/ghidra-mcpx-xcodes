@@ -70,7 +70,9 @@ public class XboxFirmwareLoader extends AbstractProgramWrapperLoader {
 		byte[] fileHeader = provider.readBytes(0, 8);
 		
 		if (Arrays.equals(firmwareHeader, fileHeader)) {
-			loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("mcpxcode:LE:32:default", "default"), true));
+			loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("mcpxcode:LE:32:DBUG", "default"), true));
+			loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("mcpxcode:LE:32:LATEDBUG", "default"), true));
+			loadSpecs.add(new LoadSpec(this, 0, new LanguageCompilerSpecPair("mcpxcode:LE:32:RETAIL", "default"), true));
 		}
 
 		return loadSpecs;

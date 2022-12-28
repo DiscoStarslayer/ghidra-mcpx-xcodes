@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- See Relax specification: Ghidra/Framework/SoftwareModeling/data/languages/language_definitions.rxg -->
+
+<language_definitions>
+<!-- Uncomment the following to make the language available in Ghidra -->
+   <language processor="mcpxcode"
+            endian="little"
+            size="32"
+            variant="LATEDBUG"
+            version="1.0"
+            slafile="xcodelatedbug.sla"
+            processorspec="xcodelatedbug.pspec"
+            id="mcpxcode:LE:32:LATEDBUG">
+    <description>Skeleton Language Module</description>
+    <compiler name="default" spec="xcodelatedbug.cspec" id="default"/>
+  </language> 
+</language_definitions>

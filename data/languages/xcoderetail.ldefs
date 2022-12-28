@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- See Relax specification: Ghidra/Framework/SoftwareModeling/data/languages/language_definitions.rxg -->
+
+<language_definitions>
+<!-- Uncomment the following to make the language available in Ghidra -->
+   <language processor="mcpxcode"
+            endian="little"
+            size="32"
+            variant="RETAIL"
+            version="1.0"
+            slafile="xcoderetail.sla"
+            processorspec="xcoderetail.pspec"
+            id="mcpxcode:LE:32:RETAIL">
+    <description>Skeleton Language Module</description>
+    <compiler name="default" spec="xcoderetail.cspec" id="default"/>
+  </language> 
+</language_definitions>
